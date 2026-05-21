@@ -1,0 +1,15 @@
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.venv/
+*.pyc
+dist/
+build/
+*.egg-info/
+.env
+.mypy_cache/
+.claude/
+.omc/
+
+# Local-only readiness checklist
+TODO.md

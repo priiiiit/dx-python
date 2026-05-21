@@ -1,0 +1,1410 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "DX Data Cloud API",
+    "description": "The Data Cloud API is an interface for pushing data into your DX data lake for reporting. Use it for deployment data, incidents, custom data and metrics, and more.\n\nThis is a collection of HTTP RPC-style methods with URLs in the form `https://yourinstance.getdx.net/api/METHOD_FAMILY.method`.\n\nRequests can be sent as JSON or URL-encoded form data. Set `Content-Type: application/json` when sending JSON.\n\nSuccessful requests return `{\"ok\": true}`. Errors return `{\"ok\": false, \"error\": \"error_code\"}`.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "DX Support",
+      "email": "support@getdx.com",
+      "url": "https://docs.getdx.com/datacloudapi/overview/"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{instance}.getdx.net/api",
+      "description": "DX Data Cloud API",
+      "variables": {
+        "instance": {
+          "default": "yourinstance",
+          "description": "Your DX instance name"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "aiToolMetrics",
+      "description": "Add daily usage data for bespoke AI tools. Records are stored in the `bespoke_ai_tool_daily_metrics` table queryable in Data Studio."
+    },
+    {
+      "name": "customData",
+      "description": "Add arbitrary JSON data to your DX database. Records are stored in the `custom_data` table queryable alongside all other DX data."
+    },
+    {
+      "name": "deployments",
+      "description": "Create deployments in DX from any data source. API-created deployments offer a flexible approach that can handle a wide range of deployment mechanisms."
+    },
+    {
+      "name": "incidents",
+      "description": "Create or update incidents in DX."
+    },
+    {
+      "name": "pipelineRuns",
+      "description": "Capture CI pipeline data in DX where a native data connector does not exist."
+    },
+    {
+      "name": "repoGroups",
+      "description": "Organize repositories into hierarchical groups for filtering in the dashboard. Note: repoGroups API endpoints need to be manually enabled on your DX account."
+    }
+  ],
+  "paths": {
+    "/aiToolMetrics.push": {
+      "post": {
+        "operationId": "aiToolMetrics_push",
+        "summary": "Push AI tool metrics",
+        "description": "Add daily usage data for bespoke AI tools by email, date, and tool combinations.",
+        "tags": ["aiToolMetrics"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "date", "is_active", "tool"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "User email address.",
+                    "example": "test@example.com"
+                  },
+                  "date": {
+                    "type": "string",
+                    "description": "Metrics recording date.",
+                    "example": "2025-01-15"
+                  },
+                  "is_active": {
+                    "type": "boolean",
+                    "description": "User activity flag.",
+                    "example": true
+                  },
+                  "tool": {
+                    "type": "string",
+                    "description": "AI tool name.",
+                    "example": "tabnine"
+                  },
+                  "metrics": {
+                    "type": "object",
+                    "description": "Usage data object.",
+                    "example": {"usage": 100}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {"$ref": "#/components/schemas/SuccessResponse"},
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {"type": "string", "description": "Generated unique ID for the record."},
+                        "email": {"type": "string"},
+                        "date": {"type": "string"},
+                        "is_active": {"type": "boolean"},
+                        "tool": {"type": "string"},
+                        "metrics": {"type": "object"}
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/aiToolMetrics.pushAll": {
+      "post": {
+        "operationId": "aiToolMetrics_pushAll",
+        "summary": "Push multiple AI tool metrics",
+        "description": "Add multiple daily usage data records for bespoke AI tools by email, date, and tool combinations in a single request.",
+        "tags": ["aiToolMetrics"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["data"],
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "description": "Array of AI tool metrics records.",
+                    "items": {
+                      "$ref": "#/components/schemas/AiToolMetricsRecord"
+                    }
+                  }
+                }
+              },
+              "example": {
+                "data": [
+                  {
+                    "email": "engineer1@company.com",
+                    "date": "2025-01-15",
+                    "is_active": true,
+                    "tool": "tabnine",
+                    "metrics": {"lines": 150}
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success - returns array of created records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {"$ref": "#/components/schemas/SuccessResponse"},
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {"type": "string"},
+                              "email": {"type": "string"},
+                              "date": {"type": "string"},
+                              "is_active": {"type": "boolean"},
+                              "tool": {"type": "string"},
+                              "metrics": {"type": "object"}
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/customData.delete": {
+      "post": {
+        "operationId": "customData_delete",
+        "summary": "Delete custom data",
+        "description": "Delete a record based on unique reference and key pair, or ID.",
+        "tags": ["customData"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "title": "By reference and key",
+                    "required": ["reference", "key"],
+                    "properties": {
+                      "reference": {
+                        "type": "string",
+                        "description": "The domain reference.",
+                        "example": "orgname/repo"
+                      },
+                      "key": {
+                        "type": "string",
+                        "description": "The domain key.",
+                        "example": "example"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "title": "By ID",
+                    "required": ["id"],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Generated unique ID for the record."
+                      }
+                    }
+                  }
+                ]
+              },
+              "example": {
+                "reference": "orgname/repo",
+                "key": "example"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/SuccessResponse"}
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/customData.deleteAllByReference": {
+      "post": {
+        "operationId": "customData_deleteAllByReference",
+        "summary": "Delete all custom data by reference",
+        "description": "Delete all records with the given reference.",
+        "tags": ["customData"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["reference"],
+                "properties": {
+                  "reference": {
+                    "type": "string",
+                    "description": "The domain reference.",
+                    "example": "orgname/repo"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/SuccessResponse"}
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/customData.get": {
+      "get": {
+        "operationId": "customData_get",
+        "summary": "Get custom data",
+        "description": "Retrieve a custom data record based on unique reference and key pair, or ID.",
+        "tags": ["customData"],
+        "parameters": [
+          {
+            "name": "reference",
+            "in": "query",
+            "description": "The domain reference.",
+            "schema": {"type": "string"},
+            "example": "orgname/repo"
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "description": "The domain key.",
+            "schema": {"type": "string"},
+            "example": "example"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Generated unique ID for the record. Use instead of reference+key.",
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {"$ref": "#/components/schemas/SuccessResponse"},
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {"$ref": "#/components/schemas/CustomDataRecord"}
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/customData.getAllByReference": {
+      "get": {
+        "operationId": "customData_getAllByReference",
+        "summary": "Get all custom data by reference",
+        "description": "Get all custom data records with the given reference.",
+        "tags": ["customData"],
+        "parameters": [
+          {
+            "name": "reference",
+            "in": "query",
+            "required": true,
+            "description": "The domain reference.",
+            "schema": {"type": "string"},
+            "example": "orgname/repo"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {"$ref": "#/components/schemas/SuccessResponse"},
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {"$ref": "#/components/schemas/CustomDataRecord"}
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/customData.set": {
+      "post": {
+        "operationId": "customData_set",
+        "summary": "Set custom data",
+        "description": "Create or update custom data by key or reference.",
+        "tags": ["customData"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["reference", "key", "value"],
+                "properties": {
+                  "reference": {
+                    "type": "string",
+                    "description": "The domain reference.",
+                    "example": "orgname/repo"
+                  },
+                  "key": {
+                    "type": "string",
+                    "description": "The domain key.",
+                    "example": "example"
+                  },
+                  "value": {
+                    "type": "object",
+                    "description": "The object to be stored.",
+                    "example": {"version": "1.2.3"}
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "ISO-8601 timestamp. Defaults to time of request if not specified.",
+                    "example": "2024-01-01T11:22:33"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {"$ref": "#/components/schemas/SuccessResponse"},
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {"$ref": "#/components/schemas/CustomDataRecord"}
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/customData.setAll": {
+      "post": {
+        "operationId": "customData_setAll",
+        "summary": "Set multiple custom data records",
+        "description": "Create or update multiple custom data records, each containing a reference and key pair along with a JSON object value. If any items are malformed, the entire request will be rejected.",
+        "tags": ["customData"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["data"],
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "description": "A list of custom data objects. See customData.set for structure.",
+                    "items": {
+                      "type": "object",
+                      "required": ["reference", "key", "value"],
+                      "properties": {
+                        "reference": {"type": "string", "example": "orgname/repo"},
+                        "key": {"type": "string", "example": "example"},
+                        "value": {"type": "object", "example": {"version": "1.2.3"}},
+                        "timestamp": {"type": "string", "format": "date-time", "example": "2024-01-01T11:22:33"}
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "data": [
+                  {
+                    "reference": "orgname/repo",
+                    "key": "example",
+                    "value": {"version": "1.2.3"},
+                    "timestamp": "2024-01-01T11:22:33"
+                  },
+                  {
+                    "reference": "orgname/other-repo",
+                    "key": "other-example",
+                    "value": {"version": "4.5.6"},
+                    "timestamp": "2024-01-01T11:22:33"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/SuccessResponse"}
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/deployments.create": {
+      "post": {
+        "operationId": "deployments_create",
+        "summary": "Create a deployment",
+        "description": "Create a new deployment. DX supports attributing deployments to code changes via commit SHA, merge commit SHAs, or timestamps.",
+        "tags": ["deployments"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["deployed_at", "service"],
+                "properties": {
+                  "deployed_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "ISO-8601 timestamp of the deployment.",
+                    "example": "2025-01-01T12:05:00"
+                  },
+                  "service": {
+                    "$ref": "#/components/schemas/ServiceObject"
+                  },
+                  "repository": {
+                    "type": "string",
+                    "description": "Repository name including org prefix. For Bitbucket Cloud: repo name only. For Bitbucket DC: project_key/repo_name. For ADO: project_name/repo_name. For Gerrit: project name only.",
+                    "example": "my_org/payment_api"
+                  },
+                  "commit_sha": {
+                    "type": "string",
+                    "description": "Commit SHA deployed to production (7-40 chars). If not provided, attribution uses deployed_at timestamps.",
+                    "minLength": 7,
+                    "maxLength": 40,
+                    "example": "a0e61dfff93b2b07788cacf2c1cb3948ed4a39b2"
+                  },
+                  "merge_commit_shas": {
+                    "type": "array",
+                    "description": "Array of commit SHAs being deployed, for attributing deploys to pull requests. Each 7-40 chars.",
+                    "items": {"type": "string", "minLength": 7, "maxLength": 40},
+                    "example": ["a0e61dfff93b", "07788cacf2c"]
+                  },
+                  "reference_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the deployment. If not provided, a random UUID is generated. DX returns 409 if a subsequent request for the same reference_id changes values.",
+                    "example": "globally-unique-identifier"
+                  },
+                  "source_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "External URL with more deployment info. Displayed in the DX UI.",
+                    "example": "https://my_argocd.myplace.org/build/1791"
+                  },
+                  "source_name": {
+                    "type": "string",
+                    "description": "Source for the deployment to differentiate deploy systems.",
+                    "example": "argoCD"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "description": "Additional data about the deployment.",
+                    "example": {"version": "v1.11.23"}
+                  },
+                  "integration_branch": {
+                    "type": "string",
+                    "description": "Set if using a branch to integrate changes before merging to a release branch.",
+                    "example": "develop"
+                  },
+                  "success": {
+                    "type": "boolean",
+                    "description": "Whether the deployment was successful.",
+                    "example": true
+                  }
+                }
+              },
+              "example": {
+                "reference_id": "globally-unique-identifier",
+                "deployed_at": "2025-01-01T12:05:00",
+                "service": {
+                  "name": "Payments",
+                  "identifier": "payments-service"
+                },
+                "commit_sha": "d1a34f0",
+                "repository": "my_org/payment_api"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/SuccessResponse"}
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - reference_id already exists with different values",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/ErrorResponse"}
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/deployments.setPullServices": {
+      "post": {
+        "operationId": "deployments_setPullServices",
+        "summary": "Associate monorepo PRs with services",
+        "description": "Associate a monorepo pull request with specific services. Use along with deployments.create for monorepos to ensure PRs are attributed to correct services when deployment data is captured.",
+        "tags": ["deployments"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "title": "By GitHub pull ID",
+                    "required": ["github_pull_id", "services"],
+                    "properties": {
+                      "github_pull_id": {
+                        "type": "integer",
+                        "description": "The GitHub pull request ID.",
+                        "example": 1680723287
+                      },
+                      "services": {
+                        "type": "array",
+                        "description": "Array of services changed in this merge.",
+                        "items": {"$ref": "#/components/schemas/ServiceObject"}
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "title": "By repository and pull number",
+                    "required": ["repository", "pull_number", "services"],
+                    "properties": {
+                      "repository": {
+                        "type": "string",
+                        "description": "GitHub repository name including org prefix.",
+                        "example": "orgname/payments"
+                      },
+                      "pull_number": {
+                        "type": "integer",
+                        "description": "The GitHub pull request number.",
+                        "example": 234
+                      },
+                      "services": {
+                        "type": "array",
+                        "description": "Array of services changed in this merge.",
+                        "items": {"$ref": "#/components/schemas/ServiceObject"}
+                      }
+                    }
+                  }
+                ]
+              },
+              "example": {
+                "github_pull_id": 1497468863,
+                "services": [
+                  {"name": "Payments", "identifier": "payments-service"},
+                  {"identifier": "auth-service"}
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/SuccessResponse"}
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/incidents.upsert": {
+      "post": {
+        "operationId": "incidents_upsert",
+        "summary": "Create or update an incident",
+        "description": "Create or update an incident using reference_id for idempotent updates.",
+        "tags": ["incidents"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["reference_id", "started_at", "services"],
+                "properties": {
+                  "reference_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the incident to support idempotent updates.",
+                    "example": "36b1f37a-e60f-4ccd-b0c4-878a6d1175fe"
+                  },
+                  "started_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "ISO-8601 timestamp for when the incident started.",
+                    "example": "2024-01-01T11:22:33"
+                  },
+                  "services": {
+                    "type": "array",
+                    "description": "Array of services related to this incident.",
+                    "items": {"$ref": "#/components/schemas/ServiceObject"}
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the incident.",
+                    "example": "Invalid argument broke settings page"
+                  },
+                  "priority": {
+                    "type": "string",
+                    "description": "Priority assigned to the incident.",
+                    "example": "p1"
+                  },
+                  "source_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "URL to the incident in your incident management system.",
+                    "example": "https://app.opsgenie.com/incidents/123"
+                  },
+                  "resolved_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "nullable": true,
+                    "description": "ISO-8601 timestamp for when the incident was resolved.",
+                    "example": "2024-01-01T11:22:33"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "description": "Additional data about the incident. Keys may include letters, numbers, dashes and underscores.",
+                    "example": {"version": "v1.11.23"}
+                  }
+                }
+              },
+              "example": {
+                "reference_id": "36b1f37a-e60f-4ccd-b0c4-878a6d1175fe",
+                "name": "Invalid argument broke settings page",
+                "priority": "p1",
+                "source_url": "https://app.opsgenie.com/incidents/123",
+                "services": [
+                  {"name": "Payments", "identifier": "payments-service"},
+                  {"identifier": "auth-service"}
+                ],
+                "started_at": "2024-01-01T11:22:33",
+                "resolved_at": null
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/SuccessResponse"}
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/pipelineRuns.upsert": {
+      "post": {
+        "operationId": "pipelineRuns_upsert",
+        "summary": "Create or update a pipeline run",
+        "description": "Insert or update a pipeline workflow run. Multiple requests with the same reference_id are collected into one pipeline workflow run record. Status priority: failure > cancelled > success > running > unknown.",
+        "tags": ["pipelineRuns"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["pipeline_name", "pipeline_source", "reference_id", "started_at"],
+                "properties": {
+                  "pipeline_name": {
+                    "type": "string",
+                    "description": "Name of the pipeline that this job is for.",
+                    "example": "integration_tests"
+                  },
+                  "pipeline_source": {
+                    "type": "string",
+                    "description": "Which project source (e.g. CircleCI, Jenkins, Tekton).",
+                    "example": "Tekton"
+                  },
+                  "reference_id": {
+                    "type": "string",
+                    "description": "A globally unique identifier for this run.",
+                    "example": "AA713E04-1880-4E17-8C49-4A41733DAFCF"
+                  },
+                  "started_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "ISO-8601 timestamp. Requests don't need same started_at; earliest value is used.",
+                    "example": "2025-01-01T12:05:00"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["failure", "running", "success", "cancelled"],
+                    "description": "Pipeline run status."
+                  },
+                  "finished_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "ISO-8601 timestamp for when the pipeline run finished.",
+                    "example": "2025-01-01T12:10:00"
+                  },
+                  "repository": {
+                    "type": "string",
+                    "description": "The full name of the repository.",
+                    "example": "getdx/some_repo"
+                  },
+                  "commit_sha": {
+                    "type": "string",
+                    "description": "Commit SHA the build ran on. If provided, repository is required."
+                  },
+                  "pr_number": {
+                    "type": "integer",
+                    "description": "Pull request number the build ran on. If provided, repository is required.",
+                    "example": 1
+                  },
+                  "source_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Web address to view pipeline run details."
+                  },
+                  "head_branch": {
+                    "type": "string",
+                    "description": "Branch the pipeline run was run against.",
+                    "example": "main"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Email of the user who initiated the build.",
+                    "example": "john@getdx.com"
+                  },
+                  "github_username": {
+                    "type": "string",
+                    "description": "GitHub username of the user who initiated the build.",
+                    "example": "johndoe"
+                  },
+                  "gitlab_username": {
+                    "type": "string",
+                    "description": "GitLab username of the user who initiated the build.",
+                    "example": "johndoe"
+                  }
+                }
+              },
+              "example": {
+                "pipeline_name": "build_panda_finder",
+                "pipeline_source": "Tekton",
+                "reference_id": "AA713E04-1880-4E17-8C49-4A41733DAFCF",
+                "started_at": "2025-01-01T12:05:00",
+                "finished_at": "2025-01-01T12:10:00",
+                "status": "success"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/SuccessResponse"}
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/repoGroups.addRepos": {
+      "post": {
+        "operationId": "repoGroups_addRepos",
+        "summary": "Add repos to a repo group",
+        "description": "Add repositories to an existing repo group without affecting existing repos. Repositories can only belong to one repo group at a time.",
+        "tags": ["repoGroups"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["repos"],
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "description": "The ID of the repo group. Either id or reference_id must be provided."
+                  },
+                  "reference_id": {
+                    "type": "string",
+                    "description": "The unique reference ID for the repo group. Either id or reference_id must be provided.",
+                    "example": "frontend-team"
+                  },
+                  "repos": {
+                    "type": "array",
+                    "description": "Array of repository objects to add. external_id is the repo id assigned by the source (e.g. GitHub). Retrievable via repos table in Data Studio.",
+                    "items": {"$ref": "#/components/schemas/RepoReference"}
+                  }
+                }
+              },
+              "example": {
+                "reference_id": "frontend-team",
+                "repos": [
+                  {"source": "github", "external_id": "98765"},
+                  {"source": "github", "external_id": "11111"}
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {"$ref": "#/components/schemas/SuccessResponse"},
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {"$ref": "#/components/schemas/RepoGroupResponse"}
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/repoGroups.delete": {
+      "post": {
+        "operationId": "repoGroups_delete",
+        "summary": "Delete a repo group",
+        "description": "Delete a repo group by ID or reference_id. Removes the group and unassociates all repositories (repos themselves are not deleted).",
+        "tags": ["repoGroups"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Generated unique ID for the repo group. Either id or reference_id must be provided.",
+                    "example": "123"
+                  },
+                  "reference_id": {
+                    "type": "string",
+                    "description": "Unique reference ID for the repo group. Either id or reference_id must be provided.",
+                    "example": "frontend-team"
+                  }
+                }
+              },
+              "example": {
+                "reference_id": "frontend-team"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {"$ref": "#/components/schemas/SuccessResponse"},
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {"$ref": "#/components/schemas/RepoGroupResponse"}
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/repoGroups.get": {
+      "get": {
+        "operationId": "repoGroups_get",
+        "summary": "Get a repo group",
+        "description": "Retrieve a repo group by ID or reference_id.",
+        "tags": ["repoGroups"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Generated unique ID for the repo group.",
+            "schema": {"type": "string"},
+            "example": "123"
+          },
+          {
+            "name": "reference_id",
+            "in": "query",
+            "description": "Unique reference ID for the repo group.",
+            "schema": {"type": "string"},
+            "example": "frontend-team"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {"$ref": "#/components/schemas/SuccessResponse"},
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {"$ref": "#/components/schemas/RepoGroupResponse"}
+                      }
+                    }
+                  ]
+                },
+                "example": {
+                  "ok": true,
+                  "data": {
+                    "id": 123,
+                    "reference_id": "frontend-team",
+                    "name": "Frontend Team",
+                    "parent_id": 456,
+                    "row_created_at": "2024-01-01T10:00:00Z",
+                    "row_updated_at": "2024-01-01T10:00:00Z",
+                    "repos": [
+                      {"source": "github", "external_id": "12345"},
+                      {"source": "github", "external_id": "67890"}
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/repoGroups.removeRepos": {
+      "post": {
+        "operationId": "repoGroups_removeRepos",
+        "summary": "Remove repos from a repo group",
+        "description": "Remove repositories from an existing repo group. Repos themselves are not deleted, only the association. All specified repos must be in the target group.",
+        "tags": ["repoGroups"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["repos"],
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "description": "The ID of the repo group. Either id or reference_id must be provided."
+                  },
+                  "reference_id": {
+                    "type": "string",
+                    "description": "Unique reference ID for the repo group. Either id or reference_id must be provided.",
+                    "example": "frontend-team"
+                  },
+                  "repos": {
+                    "type": "array",
+                    "description": "Array of repository objects to remove from the group.",
+                    "items": {"$ref": "#/components/schemas/RepoReference"}
+                  }
+                }
+              },
+              "example": {
+                "reference_id": "frontend-team",
+                "repos": [
+                  {"source": "github", "external_id": "12345"},
+                  {"source": "github", "external_id": "67890"}
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {"$ref": "#/components/schemas/SuccessResponse"},
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {"$ref": "#/components/schemas/RepoGroupResponse"}
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/repoGroups.upsert": {
+      "post": {
+        "operationId": "repoGroups_upsert",
+        "summary": "Create or update a repo group",
+        "description": "Create or update a repo group. When updating, providing repos replaces all existing repo associations.",
+        "tags": ["repoGroups"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the repo group.",
+                    "example": "Frontend Team"
+                  },
+                  "id": {
+                    "type": "integer",
+                    "description": "ID of existing repo group to update."
+                  },
+                  "reference_id": {
+                    "type": "string",
+                    "description": "Unique identifier for idempotent updates.",
+                    "example": "frontend-team"
+                  },
+                  "parent_id": {
+                    "type": "integer",
+                    "description": "ID of the parent repo group for hierarchy.",
+                    "example": 456
+                  },
+                  "repos": {
+                    "type": "array",
+                    "description": "Array of repository objects to associate. external_id is the repo id assigned by the source. Retrievable via repos table in Data Studio.",
+                    "items": {"$ref": "#/components/schemas/RepoReference"}
+                  }
+                }
+              },
+              "example": {
+                "reference_id": "frontend-team",
+                "name": "Frontend Team",
+                "parent_id": 456,
+                "repos": [
+                  {"source": "github", "external_id": "12345"},
+                  {"source": "github", "external_id": "67890"}
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {"$ref": "#/components/schemas/SuccessResponse"},
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {"$ref": "#/components/schemas/RepoGroupResponse"}
+                      }
+                    }
+                  ]
+                },
+                "example": {
+                  "ok": true,
+                  "data": {
+                    "id": 123,
+                    "reference_id": "frontend-team",
+                    "name": "Frontend Team",
+                    "parent_id": 456,
+                    "row_created_at": "2024-01-01T10:00:00Z",
+                    "row_updated_at": "2024-01-01T10:00:00Z",
+                    "repos": [
+                      {"source": "github", "external_id": "12345"},
+                      {"source": "github", "external_id": "67890"}
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API token generated in the DX admin area. Pass as Authorization: Bearer <token>"
+      }
+    },
+    "schemas": {
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error code",
+            "example": "invalid_arguments"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          }
+        }
+      },
+      "ServiceObject": {
+        "type": "object",
+        "required": ["identifier"],
+        "description": "Service reference object. The name field is optional.",
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "description": "Service identifier.",
+            "example": "payments-service"
+          },
+          "name": {
+            "type": "string",
+            "description": "Optional display name for the service.",
+            "example": "Payments"
+          }
+        }
+      },
+      "RepoReference": {
+        "type": "object",
+        "required": ["source", "external_id"],
+        "description": "Repository reference. source and external_id can be retrieved from the repos table in Data Studio.",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Source provider (e.g. github, gitlab, bitbucket).",
+            "example": "github"
+          },
+          "external_id": {
+            "type": "string",
+            "description": "Repo ID assigned by the source provider.",
+            "example": "12345"
+          }
+        }
+      },
+      "RepoGroupResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 123
+          },
+          "reference_id": {
+            "type": "string",
+            "example": "frontend-team"
+          },
+          "name": {
+            "type": "string",
+            "example": "Frontend Team"
+          },
+          "parent_id": {
+            "type": "integer",
+            "nullable": true,
+            "example": 456
+          },
+          "row_created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-01-01T10:00:00Z"
+          },
+          "row_updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-01-01T10:00:00Z"
+          },
+          "repos": {
+            "type": "array",
+            "items": {"$ref": "#/components/schemas/RepoReference"}
+          }
+        }
+      },
+      "AiToolMetricsRecord": {
+        "type": "object",
+        "required": ["email", "date", "is_active", "tool"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User email address.",
+            "example": "engineer1@company.com"
+          },
+          "date": {
+            "type": "string",
+            "description": "Metrics recording date.",
+            "example": "2025-01-15"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "User activity flag.",
+            "example": true
+          },
+          "tool": {
+            "type": "string",
+            "description": "AI tool name.",
+            "example": "tabnine"
+          },
+          "metrics": {
+            "type": "object",
+            "description": "Usage data object.",
+            "example": {"lines": 150}
+          }
+        }
+      },
+      "CustomDataRecord": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Generated unique ID."
+          },
+          "reference": {
+            "type": "string",
+            "description": "The domain reference."
+          },
+          "key": {
+            "type": "string",
+            "description": "The domain key."
+          },
+          "value": {
+            "type": "object",
+            "description": "The stored JSON object."
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "responses": {
+      "ValidationError": {
+        "description": "Validation error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  }
+}
