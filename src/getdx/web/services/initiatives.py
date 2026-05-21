@@ -15,6 +15,10 @@ class InitiativesService:
         self,
         id: QueryScalar,
     ) -> JSONReturn:
+        """Get initiative info
+
+        ``GET /initiatives.info`` (``initiatives_info``).
+        """
         params = _clean_mapping(
             {
                 "id": _coerce_query_value(id),
@@ -33,6 +37,10 @@ class InitiativesService:
         limit: QueryScalar | None = None,
         published: QueryScalar | None = None,
     ) -> JSONReturn:
+        """List initiatives
+
+        ``GET /initiatives.list`` (``initiatives_list``).
+        """
         params = _clean_mapping(
             {
                 "cursor": _coerce_query_value(cursor),
@@ -50,6 +58,10 @@ class InitiativesService:
         self,
         id: QueryScalar,
     ) -> JSONReturn:
+        """Get initiative progress
+
+        ``GET /initiatives.progressReport`` (``initiatives_progressReport``).
+        """
         params = _clean_mapping(
             {
                 "id": _coerce_query_value(id),

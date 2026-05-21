@@ -18,6 +18,10 @@ class EventsService:
         properties: BodyValue | None = None,
         timestamp: BodyValue,
     ) -> JSONReturn:
+        """Track event
+
+        ``POST /events.track`` (``events_track``).
+        """
         json_body = _clean_mapping(
             {
                 "event_type": event_type,

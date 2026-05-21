@@ -18,6 +18,10 @@ class WorkflowRunsService:
         title: BodyValue | None = None,
         url: BodyValue,
     ) -> JSONReturn:
+        """Add workflow run link
+
+        ``POST /workflowRuns.addLink`` (``workflowRuns_addLink``).
+        """
         json_body = _clean_mapping(
             {
                 "run_id": run_id,
@@ -37,6 +41,10 @@ class WorkflowRunsService:
         run_id: BodyValue,
         status: BodyValue,
     ) -> JSONReturn:
+        """Change workflow run status
+
+        ``POST /workflowRuns.changeStatus`` (``workflowRuns_changeStatus``).
+        """
         json_body = _clean_mapping(
             {
                 "run_id": run_id,
@@ -53,6 +61,10 @@ class WorkflowRunsService:
         self,
         run_id: QueryScalar,
     ) -> JSONReturn:
+        """Get workflow run info
+
+        ``GET /workflowRuns.info`` (``workflowRuns_info``).
+        """
         params = _clean_mapping(
             {
                 "run_id": _coerce_query_value(run_id),
@@ -70,6 +82,10 @@ class WorkflowRunsService:
         message: BodyValue,
         run_id: BodyValue,
     ) -> JSONReturn:
+        """Post workflow run message
+
+        ``POST /workflowRuns.postMessage`` (``workflowRuns_postMessage``).
+        """
         json_body = _clean_mapping(
             {
                 "message": message,
@@ -88,6 +104,10 @@ class WorkflowRunsService:
         parameters: BodyValue | None = None,
         workflow_id: BodyValue,
     ) -> JSONReturn:
+        """Trigger workflow run
+
+        ``POST /workflowRuns.trigger`` (``workflowRuns_trigger``).
+        """
         json_body = _clean_mapping(
             {
                 "parameters": parameters,

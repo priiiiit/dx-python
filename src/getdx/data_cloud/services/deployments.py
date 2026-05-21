@@ -28,6 +28,10 @@ class DeploymentsService:
         source_url: BodyValue | None = None,
         success: BodyValue | None = None,
     ) -> JSONReturn:
+        """Create a deployment
+
+        ``POST /deployments.create`` (``deployments_create``).
+        """
         json_body = _clean_mapping(
             {
                 "commit_sha": commit_sha,
@@ -53,6 +57,10 @@ class DeploymentsService:
         self,
         payload: dict[str, Any],
     ) -> JSONReturn:
+        """Associate monorepo PRs with services
+
+        ``POST /deployments.setPullServices`` (``deployments_setPullServices``).
+        """
         return self._transport.request(
             "POST",
             "/deployments.setPullServices",

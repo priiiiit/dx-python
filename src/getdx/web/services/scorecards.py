@@ -18,6 +18,10 @@ class ScorecardsService:
         entity_type_identifiers: BodyValue | None = None,
         name: BodyValue,
     ) -> JSONReturn:
+        """Create scorecard
+
+        ``POST /scorecards.create`` (``scorecards_create``).
+        """
         json_body = _clean_mapping(
             {
                 "description": description,
@@ -36,6 +40,10 @@ class ScorecardsService:
         *,
         id: BodyValue,
     ) -> JSONReturn:
+        """Delete scorecard
+
+        ``POST /scorecards.delete`` (``scorecards_delete``).
+        """
         json_body = _clean_mapping(
             {
                 "id": id,
@@ -51,6 +59,10 @@ class ScorecardsService:
         self,
         id: QueryScalar,
     ) -> JSONReturn:
+        """Get scorecard info
+
+        ``GET /scorecards.info`` (``scorecards_info``).
+        """
         params = _clean_mapping(
             {
                 "id": _coerce_query_value(id),
@@ -68,6 +80,10 @@ class ScorecardsService:
         cursor: QueryScalar | None = None,
         limit: QueryScalar | None = None,
     ) -> JSONReturn:
+        """List scorecards
+
+        ``GET /scorecards.list`` (``scorecards_list``).
+        """
         params = _clean_mapping(
             {
                 "cursor": _coerce_query_value(cursor),
@@ -87,6 +103,10 @@ class ScorecardsService:
         id: BodyValue,
         name: BodyValue | None = None,
     ) -> JSONReturn:
+        """Update scorecard
+
+        ``POST /scorecards.update`` (``scorecards_update``).
+        """
         json_body = _clean_mapping(
             {
                 "description": description,

@@ -18,6 +18,10 @@ class UserGroupsService:
         name: BodyValue,
         user_emails: BodyValue | None = None,
     ) -> JSONReturn:
+        """Create user group
+
+        ``POST /userGroups.create`` (``userGroups_create``).
+        """
         json_body = _clean_mapping(
             {
                 "description": description,
@@ -36,6 +40,10 @@ class UserGroupsService:
         *,
         id: BodyValue,
     ) -> JSONReturn:
+        """Delete user group
+
+        ``POST /userGroups.delete`` (``userGroups_delete``).
+        """
         json_body = _clean_mapping(
             {
                 "id": id,
@@ -51,6 +59,10 @@ class UserGroupsService:
         self,
         id: QueryScalar,
     ) -> JSONReturn:
+        """Get user group
+
+        ``GET /userGroups.get`` (``userGroups_get``).
+        """
         params = _clean_mapping(
             {
                 "id": _coerce_query_value(id),
@@ -68,6 +80,10 @@ class UserGroupsService:
         cursor: QueryScalar | None = None,
         limit: QueryScalar | None = None,
     ) -> JSONReturn:
+        """List user groups
+
+        ``GET /userGroups.list`` (``userGroups_list``).
+        """
         params = _clean_mapping(
             {
                 "cursor": _coerce_query_value(cursor),
@@ -88,6 +104,10 @@ class UserGroupsService:
         name: BodyValue | None = None,
         user_emails: BodyValue | None = None,
     ) -> JSONReturn:
+        """Update user group
+
+        ``POST /userGroups.update`` (``userGroups_update``).
+        """
         json_body = _clean_mapping(
             {
                 "description": description,

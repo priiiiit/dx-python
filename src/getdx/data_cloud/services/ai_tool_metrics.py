@@ -20,6 +20,10 @@ class AiToolMetricsService:
         metrics: BodyValue | None = None,
         tool: BodyValue,
     ) -> JSONReturn:
+        """Push AI tool metrics
+
+        ``POST /aiToolMetrics.push`` (``aiToolMetrics_push``).
+        """
         json_body = _clean_mapping(
             {
                 "date": date,
@@ -40,6 +44,10 @@ class AiToolMetricsService:
         *,
         data: BodyValue,
     ) -> JSONReturn:
+        """Push multiple AI tool metrics
+
+        ``POST /aiToolMetrics.pushAll`` (``aiToolMetrics_pushAll``).
+        """
         json_body = _clean_mapping(
             {
                 "data": data,

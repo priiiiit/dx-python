@@ -17,6 +17,10 @@ class OrgfilesService:
         cursor: QueryScalar | None = None,
         limit: QueryScalar | None = None,
     ) -> JSONReturn:
+        """List org files
+
+        ``GET /orgfiles.list`` (``orgfiles_list``).
+        """
         params = _clean_mapping(
             {
                 "cursor": _coerce_query_value(cursor),
@@ -33,6 +37,10 @@ class OrgfilesService:
         self,
         id: QueryScalar,
     ) -> JSONReturn:
+        """Get team hierarchy
+
+        ``GET /orgfiles.teamHierarchy.get`` (``orgfiles_teamHierarchy_get``).
+        """
         params = _clean_mapping(
             {
                 "id": _coerce_query_value(id),
@@ -49,6 +57,10 @@ class OrgfilesService:
         *,
         file_content: BodyValue,
     ) -> JSONReturn:
+        """Preview team hierarchy
+
+        ``POST /orgfiles.teamHierarchy.preview`` (``orgfiles_teamHierarchy_preview``).
+        """
         json_body = _clean_mapping(
             {
                 "file_content": file_content,
@@ -65,6 +77,10 @@ class OrgfilesService:
         *,
         file_id: BodyValue,
     ) -> JSONReturn:
+        """Process team hierarchy
+
+        ``POST /orgfiles.teamHierarchy.process`` (``orgfiles_teamHierarchy_process``).
+        """
         json_body = _clean_mapping(
             {
                 "file_id": file_id,
@@ -81,6 +97,10 @@ class OrgfilesService:
         *,
         file: BodyValue,
     ) -> JSONReturn:
+        """Upload org file
+
+        ``POST /orgfiles.upload`` (``orgfiles_upload``).
+        """
         json_body = _clean_mapping(
             {
                 "file": file,

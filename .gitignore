@@ -8,6 +8,9 @@ build/
 *.egg-info/
 .env
 .mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
 .claude/
 .omc/
 

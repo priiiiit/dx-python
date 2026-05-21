@@ -15,6 +15,10 @@ class QueriesService:
         self,
         query: QueryScalar,
     ) -> JSONReturn:
+        """Get datafeed
+
+        ``GET /queries.datafeed`` (``queries_datafeed``).
+        """
         params = _clean_mapping(
             {
                 "query": _coerce_query_value(query),

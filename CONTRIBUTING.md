@@ -57,6 +57,29 @@ uv run ruff check --fix .
 
 Please ensure your code passes both format and lint checks before opening a pull request.
 
+### Pre-commit hooks
+
+Install [pre-commit](https://pre-commit.com/) hooks so format, lint, and basic
+file-hygiene checks run automatically on every commit:
+
+```bash
+uv run pre-commit install
+```
+
+You can run all hooks against the full tree on demand:
+
+```bash
+uv run pre-commit run --all-files
+```
+
+### Type checking
+
+This project is fully typed (`py.typed`). Type checks must pass on `src/`:
+
+```bash
+uv run mypy src/
+```
+
 ## Auto-Generated API Services
 
 The service wrappers for the DX Web API and DX Data Cloud API are **auto-generated** from OpenAPI specifications via `scripts/generate_from_openapi.py`. Do not hand-edit these files — any manual changes will be overwritten the next time code generation runs.

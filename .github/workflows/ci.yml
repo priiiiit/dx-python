@@ -8,7 +8,7 @@ on:
 
 jobs:
   lint:
-    name: Lint & Format
+    name: Lint, Format & Type-check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,6 +26,9 @@ jobs:
 
       - name: Lint
         run: uv run ruff check src/ tests/
+
+      - name: Type check
+        run: uv run mypy src/
 
   test:
     name: Test (Python ${{ matrix.python-version }})
@@ -46,5 +49,13 @@ jobs:
       - name: Install dependencies
         run: uv sync --dev
 
-      - name: Run tests
+      - name: Run tests with coverage
         run: uv run pytest
+
+      - name: Upload coverage artifact
+        if: matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          if-no-files-found: ignore

@@ -23,6 +23,10 @@ class IncidentsService:
         source_url: BodyValue | None = None,
         started_at: BodyValue,
     ) -> JSONReturn:
+        """Create or update an incident
+
+        ``POST /incidents.upsert`` (``incidents_upsert``).
+        """
         json_body = _clean_mapping(
             {
                 "metadata": metadata,

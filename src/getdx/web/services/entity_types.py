@@ -21,6 +21,10 @@ class EntityTypesService:
         ordering: BodyValue | None = None,
         properties: BodyValue | None = None,
     ) -> JSONReturn:
+        """Create entity type
+
+        ``POST /entityTypes.create`` (``entityTypes_create``).
+        """
         json_body = _clean_mapping(
             {
                 "aliases": aliases,
@@ -42,6 +46,10 @@ class EntityTypesService:
         *,
         identifier: BodyValue,
     ) -> JSONReturn:
+        """Delete entity type
+
+        ``POST /entityTypes.delete`` (``entityTypes_delete``).
+        """
         json_body = _clean_mapping(
             {
                 "identifier": identifier,
@@ -57,6 +65,10 @@ class EntityTypesService:
         self,
         identifier: QueryScalar,
     ) -> JSONReturn:
+        """Get entity type info
+
+        ``GET /entityTypes.info`` (``entityTypes_info``).
+        """
         params = _clean_mapping(
             {
                 "identifier": _coerce_query_value(identifier),
@@ -74,6 +86,10 @@ class EntityTypesService:
         cursor: QueryScalar | None = None,
         limit: QueryScalar | None = None,
     ) -> JSONReturn:
+        """List entity types
+
+        ``GET /entityTypes.list`` (``entityTypes_list``).
+        """
         params = _clean_mapping(
             {
                 "cursor": _coerce_query_value(cursor),
@@ -96,6 +112,10 @@ class EntityTypesService:
         ordering: BodyValue | None = None,
         properties: BodyValue | None = None,
     ) -> JSONReturn:
+        """Update entity type
+
+        ``POST /entityTypes.update`` (``entityTypes_update``).
+        """
         json_body = _clean_mapping(
             {
                 "aliases": aliases,

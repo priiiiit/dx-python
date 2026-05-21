@@ -288,10 +288,10 @@ class DXDataCloudClient:
 
 def _exactly_one_selector(
     *,
-    id: BodyValue | None,
-    reference_id: BodyValue | None,
+    id: Any,
+    reference_id: Any,
     method_name: str,
-) -> dict[str, BodyValue]:
+) -> dict[str, Any]:
     if id is not None and reference_id is not None:
         raise DXArgumentError(f"{method_name} accepts either id or reference_id, not both.")
     if id is None and reference_id is None:

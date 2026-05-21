@@ -17,6 +17,10 @@ class PlatformxService:
         description: BodyValue | None = None,
         name: BodyValue,
     ) -> JSONReturn:
+        """Create PlatformX project
+
+        ``POST /platformx.projects.create`` (``platformx_projects_create``).
+        """
         json_body = _clean_mapping(
             {
                 "description": description,
@@ -35,6 +39,10 @@ class PlatformxService:
         cursor: QueryScalar | None = None,
         limit: QueryScalar | None = None,
     ) -> JSONReturn:
+        """List PlatformX projects
+
+        ``GET /platformx.projects.list`` (``platformx_projects_list``).
+        """
         params = _clean_mapping(
             {
                 "cursor": _coerce_query_value(cursor),

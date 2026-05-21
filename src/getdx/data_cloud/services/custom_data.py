@@ -17,6 +17,10 @@ class CustomDataService:
         self,
         payload: dict[str, Any],
     ) -> JSONReturn:
+        """Delete custom data
+
+        ``POST /customData.delete`` (``customData_delete``).
+        """
         return self._transport.request(
             "POST",
             "/customData.delete",
@@ -28,6 +32,10 @@ class CustomDataService:
         *,
         reference: BodyValue,
     ) -> JSONReturn:
+        """Delete all custom data by reference
+
+        ``POST /customData.deleteAllByReference`` (``customData_deleteAllByReference``).
+        """
         json_body = _clean_mapping(
             {
                 "reference": reference,
@@ -46,6 +54,10 @@ class CustomDataService:
         key: QueryScalar | None = None,
         id: QueryScalar | None = None,
     ) -> JSONReturn:
+        """Get custom data
+
+        ``GET /customData.get`` (``customData_get``).
+        """
         params = _clean_mapping(
             {
                 "reference": _coerce_query_value(reference),
@@ -63,6 +75,10 @@ class CustomDataService:
         self,
         reference: QueryScalar,
     ) -> JSONReturn:
+        """Get all custom data by reference
+
+        ``GET /customData.getAllByReference`` (``customData_getAllByReference``).
+        """
         params = _clean_mapping(
             {
                 "reference": _coerce_query_value(reference),
@@ -82,6 +98,10 @@ class CustomDataService:
         timestamp: BodyValue | None = None,
         value: BodyValue,
     ) -> JSONReturn:
+        """Set custom data
+
+        ``POST /customData.set`` (``customData_set``).
+        """
         json_body = _clean_mapping(
             {
                 "key": key,
@@ -101,6 +121,10 @@ class CustomDataService:
         *,
         data: BodyValue,
     ) -> JSONReturn:
+        """Set multiple custom data records
+
+        ``POST /customData.setAll`` (``customData_setAll``).
+        """
         json_body = _clean_mapping(
             {
                 "data": data,

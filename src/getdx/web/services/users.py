@@ -17,6 +17,10 @@ class UsersService:
         attributes: BodyValue | None = None,
         email: BodyValue,
     ) -> JSONReturn:
+        """Update user attributes
+
+        ``POST /users.attributes.update`` (``users_attributes_update``).
+        """
         json_body = _clean_mapping(
             {
                 "attributes": attributes,
@@ -33,6 +37,10 @@ class UsersService:
         self,
         username: QueryScalar,
     ) -> JSONReturn:
+        """Find user by GitHub username
+
+        ``GET /users.findByGithubUsername`` (``users_findByGithubUsername``).
+        """
         params = _clean_mapping(
             {
                 "username": _coerce_query_value(username),
@@ -51,6 +59,10 @@ class UsersService:
         name: BodyValue | None = None,
         properties: BodyValue | None = None,
     ) -> JSONReturn:
+        """Update user
+
+        ``POST /users.update`` (``users_update``).
+        """
         json_body = _clean_mapping(
             {
                 "email": email,

@@ -45,7 +45,9 @@ Documentation = "https://docs.getdx.com"
 [dependency-groups]
 dev = [
   "mypy>=1.11.0",
+  "pre-commit>=3.8.0",
   "pytest>=8.3.0",
+  "pytest-cov>=5.0.0",
   "pytest-httpx>=0.35.0",
   "ruff>=0.6.0",
 ]
@@ -67,6 +69,18 @@ quote-style = "double"
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+addopts = "--cov=getdx --cov-report=term-missing --cov-report=xml"
+
+[tool.coverage.run]
+source = ["getdx"]
+branch = true
+
+[tool.coverage.report]
+exclude_also = [
+  "if TYPE_CHECKING:",
+  "raise NotImplementedError",
+  "\\.\\.\\.",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/getdx"]

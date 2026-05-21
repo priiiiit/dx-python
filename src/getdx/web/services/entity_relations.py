@@ -19,6 +19,10 @@ class EntityRelationsService:
         cursor: QueryScalar | None = None,
         limit: QueryScalar | None = None,
     ) -> JSONReturn:
+        """List entity relations
+
+        ``GET /entityRelations.list`` (``entityRelations_list``).
+        """
         params = _clean_mapping(
             {
                 "entity_identifier": _coerce_query_value(entity_identifier),

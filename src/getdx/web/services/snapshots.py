@@ -15,6 +15,10 @@ class SnapshotsService:
         self,
         snapshot_id: QueryScalar,
     ) -> JSONReturn:
+        """List snapshot comments
+
+        ``GET /snapshots.comments.list`` (``snapshots_comments_list``).
+        """
         params = _clean_mapping(
             {
                 "snapshot_id": _coerce_query_value(snapshot_id),
@@ -31,6 +35,10 @@ class SnapshotsService:
         snapshot_id: QueryScalar,
         file_path: QueryScalar,
     ) -> JSONReturn:
+        """Get snapshot file
+
+        ``GET /snapshots.getFile`` (``snapshots_getFile``).
+        """
         params = _clean_mapping(
             {
                 "snapshot_id": _coerce_query_value(snapshot_id),
@@ -47,6 +55,10 @@ class SnapshotsService:
         self,
         id: QueryScalar,
     ) -> JSONReturn:
+        """Get snapshot info
+
+        ``GET /snapshots.info`` (``snapshots_info``).
+        """
         params = _clean_mapping(
             {
                 "id": _coerce_query_value(id),
@@ -64,6 +76,10 @@ class SnapshotsService:
         cursor: QueryScalar | None = None,
         limit: QueryScalar | None = None,
     ) -> JSONReturn:
+        """List snapshots
+
+        ``GET /snapshots.list`` (``snapshots_list``).
+        """
         params = _clean_mapping(
             {
                 "cursor": _coerce_query_value(cursor),

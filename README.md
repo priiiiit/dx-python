@@ -1,5 +1,10 @@
 # getdx
 
+[![PyPI version](https://img.shields.io/pypi/v/getdx.svg)](https://pypi.org/project/getdx/)
+[![Python versions](https://img.shields.io/pypi/pyversions/getdx.svg)](https://pypi.org/project/getdx/)
+[![CI](https://github.com/priiiiit/dx-python/actions/workflows/ci.yml/badge.svg)](https://github.com/priiiiit/dx-python/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Sync-first Python SDK covering both DX APIs:
 - DX Web API (`https://api.getdx.com`)
 - DX Data Cloud API (`https://{instance}.getdx.net/api`)

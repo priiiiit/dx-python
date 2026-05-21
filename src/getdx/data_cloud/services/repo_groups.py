@@ -18,6 +18,10 @@ class RepoGroupsService:
         reference_id: BodyValue | None = None,
         repos: BodyValue,
     ) -> JSONReturn:
+        """Add repos to a repo group
+
+        ``POST /repoGroups.addRepos`` (``repoGroups_addRepos``).
+        """
         json_body = _clean_mapping(
             {
                 "id": id,
@@ -37,6 +41,10 @@ class RepoGroupsService:
         id: BodyValue | None = None,
         reference_id: BodyValue | None = None,
     ) -> JSONReturn:
+        """Delete a repo group
+
+        ``POST /repoGroups.delete`` (``repoGroups_delete``).
+        """
         json_body = _clean_mapping(
             {
                 "id": id,
@@ -55,6 +63,10 @@ class RepoGroupsService:
         id: QueryScalar | None = None,
         reference_id: QueryScalar | None = None,
     ) -> JSONReturn:
+        """Get a repo group
+
+        ``GET /repoGroups.get`` (``repoGroups_get``).
+        """
         params = _clean_mapping(
             {
                 "id": _coerce_query_value(id),
@@ -74,6 +86,10 @@ class RepoGroupsService:
         reference_id: BodyValue | None = None,
         repos: BodyValue,
     ) -> JSONReturn:
+        """Remove repos from a repo group
+
+        ``POST /repoGroups.removeRepos`` (``repoGroups_removeRepos``).
+        """
         json_body = _clean_mapping(
             {
                 "id": id,
@@ -96,6 +112,10 @@ class RepoGroupsService:
         reference_id: BodyValue | None = None,
         repos: BodyValue | None = None,
     ) -> JSONReturn:
+        """Create or update a repo group
+
+        ``POST /repoGroups.upsert`` (``repoGroups_upsert``).
+        """
         json_body = _clean_mapping(
             {
                 "id": id,

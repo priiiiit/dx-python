@@ -15,6 +15,10 @@ class TeamsService:
         self,
         team_id: QueryScalar,
     ) -> JSONReturn:
+        """Get team audit trail
+
+        ``GET /teams.auditTrail`` (``teams_auditTrail``).
+        """
         params = _clean_mapping(
             {
                 "team_id": _coerce_query_value(team_id),
@@ -30,6 +34,10 @@ class TeamsService:
         self,
         team_emails: QueryScalar,
     ) -> JSONReturn:
+        """Find teams by members
+
+        ``GET /teams.findByMembers`` (``teams_findByMembers``).
+        """
         params = _clean_mapping(
             {
                 "team_emails": _coerce_query_value(team_emails),
@@ -47,6 +55,10 @@ class TeamsService:
         team_id: QueryScalar | None = None,
         reference_id: QueryScalar | None = None,
     ) -> JSONReturn:
+        """Get team info
+
+        ``GET /teams.info`` (``teams_info``).
+        """
         params = _clean_mapping(
             {
                 "team_id": _coerce_query_value(team_id),
@@ -65,6 +77,10 @@ class TeamsService:
         cursor: QueryScalar | None = None,
         limit: QueryScalar | None = None,
     ) -> JSONReturn:
+        """List teams
+
+        ``GET /teams.list`` (``teams_list``).
+        """
         params = _clean_mapping(
             {
                 "cursor": _coerce_query_value(cursor),

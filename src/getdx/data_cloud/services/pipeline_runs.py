@@ -29,6 +29,10 @@ class PipelineRunsService:
         started_at: BodyValue,
         status: BodyValue | None = None,
     ) -> JSONReturn:
+        """Create or update a pipeline run
+
+        ``POST /pipelineRuns.upsert`` (``pipelineRuns_upsert``).
+        """
         json_body = _clean_mapping(
             {
                 "commit_sha": commit_sha,

@@ -33,6 +33,7 @@ class OperationSpec:
     parameters: tuple[ParamSpec, ...]
     body_fields: tuple[ParamSpec, ...]
     has_complex_body: bool
+    summary: str
 
 
 def to_snake(name: str) -> str:
@@ -107,6 +108,9 @@ def load_operations(spec: dict[str, Any]) -> list[OperationSpec]:
                     for field, field_spec in sorted(body_schema.get("properties", {}).items())
                 )
 
+            raw_summary = operation.get("summary") or operation.get("description") or ""
+            summary = " ".join(raw_summary.split()).strip()
+
             all_operations.append(
                 OperationSpec(
                     operation_id=operation_id,
@@ -120,6 +124,7 @@ def load_operations(spec: dict[str, Any]) -> list[OperationSpec]:
                     parameters=parameters,
                     body_fields=body_fields,
                     has_complex_body=has_complex_body,
+                    summary=summary,
                 )
             )
 
@@ -223,9 +228,17 @@ def _render_signature(op: OperationSpec) -> list[str]:
     return lines
 
 
+def _render_docstring(op: OperationSpec) -> list[str]:
+    if not op.summary:
+        return [f'        """``{op.method} {op.path}`` (``{op.operation_id}``)."""']
+    safe_summary = op.summary.replace('"""', "'''")
+    return [f'        """{safe_summary}\n\n        ``{op.method} {op.path}`` (``{op.operation_id}``).\n        """']
+
+
 def _render_method(op: OperationSpec) -> str:
     signature = _render_signature(op)
     rendered_signature = [f"        {item}," for item in signature]
+    docstring_lines = _render_docstring(op)
 
     body_lines: list[str] = []
     if op.method == "GET":
@@ -283,6 +296,7 @@ def _render_method(op: OperationSpec) -> str:
             f"    def {op.method_name}(",
             *rendered_signature,
             "    ) -> JSONReturn:",
+            *docstring_lines,
             *body_lines,
             "",
         ]

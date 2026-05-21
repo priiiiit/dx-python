@@ -21,6 +21,10 @@ class EntitiesService:
         name: BodyValue,
         properties: BodyValue | None = None,
     ) -> JSONReturn:
+        """Create entity
+
+        ``POST /entities.create`` (``entities_create``).
+        """
         json_body = _clean_mapping(
             {
                 "aliases": aliases,
@@ -42,6 +46,10 @@ class EntitiesService:
         *,
         identifier: BodyValue,
     ) -> JSONReturn:
+        """Delete entity
+
+        ``POST /entities.delete`` (``entities_delete``).
+        """
         json_body = _clean_mapping(
             {
                 "identifier": identifier,
@@ -57,6 +65,10 @@ class EntitiesService:
         self,
         identifier: QueryScalar,
     ) -> JSONReturn:
+        """Get entity info
+
+        ``GET /entities.info`` (``entities_info``).
+        """
         params = _clean_mapping(
             {
                 "identifier": _coerce_query_value(identifier),
@@ -75,6 +87,10 @@ class EntitiesService:
         cursor: QueryScalar | None = None,
         limit: QueryScalar | None = None,
     ) -> JSONReturn:
+        """List entities
+
+        ``GET /entities.list`` (``entities_list``).
+        """
         params = _clean_mapping(
             {
                 "entity_type_identifier": _coerce_query_value(entity_type_identifier),
@@ -92,6 +108,10 @@ class EntitiesService:
         self,
         identifier: QueryScalar,
     ) -> JSONReturn:
+        """Get entity scorecards
+
+        ``GET /entities.scorecards`` (``entities_scorecards``).
+        """
         params = _clean_mapping(
             {
                 "identifier": _coerce_query_value(identifier),
@@ -107,6 +127,10 @@ class EntitiesService:
         self,
         identifier: QueryScalar,
     ) -> JSONReturn:
+        """List entity tasks
+
+        ``GET /entities.tasks`` (``entities_tasks``).
+        """
         params = _clean_mapping(
             {
                 "identifier": _coerce_query_value(identifier),
@@ -127,6 +151,10 @@ class EntitiesService:
         name: BodyValue | None = None,
         properties: BodyValue | None = None,
     ) -> JSONReturn:
+        """Update entity
+
+        ``POST /entities.update`` (``entities_update``).
+        """
         json_body = _clean_mapping(
             {
                 "aliases": aliases,
@@ -152,6 +180,10 @@ class EntitiesService:
         name: BodyValue | None = None,
         properties: BodyValue | None = None,
     ) -> JSONReturn:
+        """Upsert entity
+
+        ``POST /entities.upsert`` (``entities_upsert``).
+        """
         json_body = _clean_mapping(
             {
                 "aliases": aliases,

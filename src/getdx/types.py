@@ -5,7 +5,8 @@ from typing import Any
 JSONScalar = str | int | float | bool | None
 JSONValue = JSONScalar | dict[str, "JSONValue"] | list["JSONValue"]
 JSONDict = dict[str, JSONValue]
-JSONResponse = JSONValue
+# All DX API endpoints return a top-level JSON object or array.
+JSONResponse = dict[str, Any] | list[Any]
 QueryScalar = str | int | float | bool
 BodyScalar = str | int | float | bool
 BodyValue = BodyScalar | dict[str, Any] | list[Any]
