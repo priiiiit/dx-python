@@ -164,7 +164,7 @@
     }
   },
   "paths": {
-    "/entities.create": {
+    "/catalog.entities.create": {
       "post": {
         "tags": [
           "entities"
@@ -222,7 +222,7 @@
         }
       }
     },
-    "/entities.delete": {
+    "/catalog.entities.delete": {
       "post": {
         "tags": [
           "entities"
@@ -243,27 +243,19 @@
             "$ref": "#/components/responses/RateLimit"
           }
         },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "identifier": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "identifier"
-                ]
-              }
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
-        }
+        ]
       }
     },
-    "/entities.info": {
+    "/catalog.entities.info": {
       "get": {
         "tags": [
           "entities"
@@ -296,7 +288,7 @@
         ]
       }
     },
-    "/entities.list": {
+    "/catalog.entities.list": {
       "get": {
         "tags": [
           "entities"
@@ -319,7 +311,7 @@
         },
         "parameters": [
           {
-            "name": "entity_type_identifier",
+            "name": "type",
             "in": "query",
             "required": false,
             "schema": {
@@ -341,11 +333,19 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "search_term",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ]
       }
     },
-    "/entities.scorecards": {
+    "/catalog.entities.scorecards": {
       "get": {
         "tags": [
           "entities"
@@ -378,7 +378,7 @@
         ]
       }
     },
-    "/entities.tasks": {
+    "/catalog.entities.tasks": {
       "get": {
         "tags": [
           "entities"
@@ -411,7 +411,7 @@
         ]
       }
     },
-    "/entities.update": {
+    "/catalog.entities.update": {
       "post": {
         "tags": [
           "entities"
@@ -453,6 +453,24 @@
                   },
                   "aliases": {
                     "type": "string"
+                  },
+                  "owner_team_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "owner_user_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "owner_user_emails": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
                   }
                 },
                 "required": [
@@ -464,7 +482,7 @@
         }
       }
     },
-    "/entities.upsert": {
+    "/catalog.entities.upsert": {
       "post": {
         "tags": [
           "entities"
@@ -495,7 +513,7 @@
                   "identifier": {
                     "type": "string"
                   },
-                  "entity_type_identifier": {
+                  "type": {
                     "type": "string"
                   },
                   "name": {
@@ -504,16 +522,38 @@
                   "description": {
                     "type": "string"
                   },
+                  "owner_team_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "owner_user_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "owner_user_emails": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
                   "properties": {
-                    "type": "string"
+                    "type": "object"
                   },
                   "aliases": {
-                    "type": "string"
+                    "type": "object"
+                  },
+                  "domain": {
+                    "type": "string",
+                    "description": "Domain entity identifier. Accepted by the API but not listed in the public docs."
                   }
                 },
                 "required": [
                   "identifier",
-                  "entity_type_identifier"
+                  "type"
                 ]
               }
             }

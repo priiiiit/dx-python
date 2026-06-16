@@ -10,19 +10,19 @@ def _make_client() -> DXClient:
 def test_entity_overview_aggregate(httpx_mock) -> None:
     httpx_mock.add_response(
         method="GET",
-        url="https://api.getdx.com/entities.info?identifier=e-1",
+        url="https://api.getdx.com/catalog.entities.info?identifier=e-1",
         status_code=200,
         json={"ok": True, "entity": {"identifier": "e-1"}},
     )
     httpx_mock.add_response(
         method="GET",
-        url="https://api.getdx.com/entities.scorecards?identifier=e-1",
+        url="https://api.getdx.com/catalog.entities.scorecards?identifier=e-1",
         status_code=200,
         json={"ok": True, "scorecards": []},
     )
     httpx_mock.add_response(
         method="GET",
-        url="https://api.getdx.com/entities.tasks?identifier=e-1",
+        url="https://api.getdx.com/catalog.entities.tasks?identifier=e-1",
         status_code=200,
         json={"ok": True, "tasks": []},
     )
@@ -39,7 +39,7 @@ def test_entity_overview_aggregate(httpx_mock) -> None:
 def test_entity_relations_aggregate_paginates(httpx_mock) -> None:
     httpx_mock.add_response(
         method="GET",
-        url="https://api.getdx.com/entities.info?identifier=e-1",
+        url="https://api.getdx.com/catalog.entities.info?identifier=e-1",
         status_code=200,
         json={"ok": True, "entity": {"identifier": "e-1"}},
     )

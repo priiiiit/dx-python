@@ -23,7 +23,7 @@ class EntitiesService:
     ) -> JSONReturn:
         """Create entity
 
-        ``POST /entities.create`` (``entities_create``).
+        ``POST /catalog.entities.create`` (``entities_create``).
         """
         json_body = _clean_mapping(
             {
@@ -37,28 +37,27 @@ class EntitiesService:
         )
         return self._transport.request(
             "POST",
-            "/entities.create",
+            "/catalog.entities.create",
             json_body=json_body,
         )
 
     def delete(
         self,
-        *,
-        identifier: BodyValue,
+        identifier: QueryScalar,
     ) -> JSONReturn:
         """Delete entity
 
-        ``POST /entities.delete`` (``entities_delete``).
+        ``POST /catalog.entities.delete`` (``entities_delete``).
         """
-        json_body = _clean_mapping(
+        params = _clean_mapping(
             {
-                "identifier": identifier,
+                "identifier": _coerce_query_value(identifier),
             }
         )
         return self._transport.request(
             "POST",
-            "/entities.delete",
-            json_body=json_body,
+            "/catalog.entities.delete",
+            params=params,
         )
 
     def info(
@@ -67,7 +66,7 @@ class EntitiesService:
     ) -> JSONReturn:
         """Get entity info
 
-        ``GET /entities.info`` (``entities_info``).
+        ``GET /catalog.entities.info`` (``entities_info``).
         """
         params = _clean_mapping(
             {
@@ -76,31 +75,33 @@ class EntitiesService:
         )
         return self._transport.request(
             "GET",
-            "/entities.info",
+            "/catalog.entities.info",
             params=params,
         )
 
     def list(
         self,
         *,
-        entity_type_identifier: QueryScalar | None = None,
+        type: QueryScalar | None = None,
         cursor: QueryScalar | None = None,
         limit: QueryScalar | None = None,
+        search_term: QueryScalar | None = None,
     ) -> JSONReturn:
         """List entities
 
-        ``GET /entities.list`` (``entities_list``).
+        ``GET /catalog.entities.list`` (``entities_list``).
         """
         params = _clean_mapping(
             {
-                "entity_type_identifier": _coerce_query_value(entity_type_identifier),
+                "type": _coerce_query_value(type),
                 "cursor": _coerce_query_value(cursor),
                 "limit": _coerce_query_value(limit),
+                "search_term": _coerce_query_value(search_term),
             }
         )
         return self._transport.request(
             "GET",
-            "/entities.list",
+            "/catalog.entities.list",
             params=params,
         )
 
@@ -110,7 +111,7 @@ class EntitiesService:
     ) -> JSONReturn:
         """Get entity scorecards
 
-        ``GET /entities.scorecards`` (``entities_scorecards``).
+        ``GET /catalog.entities.scorecards`` (``entities_scorecards``).
         """
         params = _clean_mapping(
             {
@@ -119,7 +120,7 @@ class EntitiesService:
         )
         return self._transport.request(
             "GET",
-            "/entities.scorecards",
+            "/catalog.entities.scorecards",
             params=params,
         )
 
@@ -129,7 +130,7 @@ class EntitiesService:
     ) -> JSONReturn:
         """List entity tasks
 
-        ``GET /entities.tasks`` (``entities_tasks``).
+        ``GET /catalog.entities.tasks`` (``entities_tasks``).
         """
         params = _clean_mapping(
             {
@@ -138,7 +139,7 @@ class EntitiesService:
         )
         return self._transport.request(
             "GET",
-            "/entities.tasks",
+            "/catalog.entities.tasks",
             params=params,
         )
 
@@ -149,11 +150,14 @@ class EntitiesService:
         description: BodyValue | None = None,
         identifier: BodyValue,
         name: BodyValue | None = None,
+        owner_team_ids: BodyValue | None = None,
+        owner_user_emails: BodyValue | None = None,
+        owner_user_ids: BodyValue | None = None,
         properties: BodyValue | None = None,
     ) -> JSONReturn:
         """Update entity
 
-        ``POST /entities.update`` (``entities_update``).
+        ``POST /catalog.entities.update`` (``entities_update``).
         """
         json_body = _clean_mapping(
             {
@@ -161,12 +165,15 @@ class EntitiesService:
                 "description": description,
                 "identifier": identifier,
                 "name": name,
+                "owner_team_ids": owner_team_ids,
+                "owner_user_emails": owner_user_emails,
+                "owner_user_ids": owner_user_ids,
                 "properties": properties,
             }
         )
         return self._transport.request(
             "POST",
-            "/entities.update",
+            "/catalog.entities.update",
             json_body=json_body,
         )
 
@@ -175,27 +182,35 @@ class EntitiesService:
         *,
         aliases: BodyValue | None = None,
         description: BodyValue | None = None,
-        entity_type_identifier: BodyValue,
+        domain: BodyValue | None = None,
         identifier: BodyValue,
         name: BodyValue | None = None,
+        owner_team_ids: BodyValue | None = None,
+        owner_user_emails: BodyValue | None = None,
+        owner_user_ids: BodyValue | None = None,
         properties: BodyValue | None = None,
+        type: BodyValue,
     ) -> JSONReturn:
         """Upsert entity
 
-        ``POST /entities.upsert`` (``entities_upsert``).
+        ``POST /catalog.entities.upsert`` (``entities_upsert``).
         """
         json_body = _clean_mapping(
             {
                 "aliases": aliases,
                 "description": description,
-                "entity_type_identifier": entity_type_identifier,
+                "domain": domain,
                 "identifier": identifier,
                 "name": name,
+                "owner_team_ids": owner_team_ids,
+                "owner_user_emails": owner_user_emails,
+                "owner_user_ids": owner_user_ids,
                 "properties": properties,
+                "type": type,
             }
         )
         return self._transport.request(
             "POST",
-            "/entities.upsert",
+            "/catalog.entities.upsert",
             json_body=json_body,
         )

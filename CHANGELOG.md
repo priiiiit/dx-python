@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-06-10
+
+### Fixed
+
+#### DX Web API client (`client.web`)
+- `entities` operations now call the documented `/catalog.entities.*` endpoints instead of the legacy, temporarily-available `/entities.*` aliases.
+- `entities.upsert` — request body now matches the API: `type` replaces the rejected `entity_type_identifier`; added `owner_team_ids`, `owner_user_ids`, `owner_user_emails`, and `domain` (accepted by the API but absent from the public docs).
+- `entities.update` — added `owner_team_ids`, `owner_user_ids`, and `owner_user_emails` body fields.
+- `entities.list` — query param renamed `entity_type_identifier` → `type` (the name the API accepts); added `search_term`.
+- `entities.delete` — `identifier` is now sent as a query parameter (the documented format) instead of a JSON body field.
+
+#### Code generation
+- `scripts/generate_from_openapi.py` now renders query parameters on non-GET operations (required for `catalog.entities.delete`).
+
 ## [0.1.0] - 2026-05-21
 
 ### Added
@@ -78,5 +92,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DX_DATA_CLOUD_TOKEN` — fallback token for the Data Cloud API.
 - `DX_DATA_CLOUD_INSTANCE` — fallback instance name for the Data Cloud API base URL.
 
-[Unreleased]: https://github.com/priiiiit/dx-python/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/priiiiit/dx-python/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/priiiiit/dx-python/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/priiiiit/dx-python/releases/tag/v0.1.0
