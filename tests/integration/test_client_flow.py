@@ -8,13 +8,13 @@ from getdx import DXClient, DXClientNotConfiguredError, DXDataCloudConfig, DXWeb
 def test_web_requests_are_fresh(httpx_mock) -> None:
     httpx_mock.add_response(
         method="GET",
-        url="https://api.getdx.com/entities.info?identifier=e-1",
+        url="https://api.getdx.com/catalog.entities.info?identifier=e-1",
         status_code=200,
         json={"ok": True, "version": 1},
     )
     httpx_mock.add_response(
         method="GET",
-        url="https://api.getdx.com/entities.info?identifier=e-1",
+        url="https://api.getdx.com/catalog.entities.info?identifier=e-1",
         status_code=200,
         json={"ok": True, "version": 2},
     )
@@ -38,7 +38,7 @@ def test_unconfigured_namespace_raises() -> None:
 def test_dual_namespace_client(httpx_mock) -> None:
     httpx_mock.add_response(
         method="GET",
-        url="https://api.getdx.com/entities.info?identifier=e-1",
+        url="https://api.getdx.com/catalog.entities.info?identifier=e-1",
         status_code=200,
         json={"ok": True, "entity": {"identifier": "e-1"}},
     )

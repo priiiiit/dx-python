@@ -201,30 +201,32 @@ def render_operations_module(operations: list[OperationSpec]) -> str:
 
 def _render_signature(op: OperationSpec) -> list[str]:
     lines: list[str] = ["self"]
+    required_params = [p for p in op.parameters if p.required]
+    optional_params = [p for p in op.parameters if not p.required]
+
+    for param in required_params:
+        lines.append(f"{param.name}: QueryScalar")
+
     if op.method == "GET":
-        required = [p for p in op.parameters if p.required]
-        optional = [p for p in op.parameters if not p.required]
-        for param in required:
-            lines.append(f"{param.name}: QueryScalar")
-        if optional:
+        if optional_params:
             lines.append("*")
-        for param in optional:
+        for param in optional_params:
             lines.append(f"{param.name}: QueryScalar | None = None")
         return lines
 
     if op.has_complex_body:
         lines.append("payload: dict[str, Any]")
-        return lines
 
-    if not op.body_fields:
-        return lines
-
-    lines.append("*")
-    for field in op.body_fields:
-        if field.required:
-            lines.append(f"{field.name}: BodyValue")
-        else:
-            lines.append(f"{field.name}: BodyValue | None = None")
+    if optional_params or (op.body_fields and not op.has_complex_body):
+        lines.append("*")
+    for param in optional_params:
+        lines.append(f"{param.name}: QueryScalar | None = None")
+    if not op.has_complex_body:
+        for field in op.body_fields:
+            if field.required:
+                lines.append(f"{field.name}: BodyValue")
+            else:
+                lines.append(f"{field.name}: BodyValue | None = None")
     return lines
 
 
@@ -241,55 +243,34 @@ def _render_method(op: OperationSpec) -> str:
     docstring_lines = _render_docstring(op)
 
     body_lines: list[str] = []
-    if op.method == "GET":
+    request_args: list[str] = []
+
+    if op.parameters:
         body_lines.extend(["        params = _clean_mapping(", "            {"])
         for param in op.parameters:
             body_lines.append(f"                {param.name!r}: _coerce_query_value({param.name}),")
-        body_lines.extend(
-            [
-                "            }",
-                "        )",
-                "        return self._transport.request(",
-                f"            {op.method!r},",
-                f"            {op.path!r},",
-                "            params=params,",
-                "        )",
-            ]
-        )
-    elif op.has_complex_body:
-        body_lines.extend(
-            [
-                "        return self._transport.request(",
-                f"            {op.method!r},",
-                f"            {op.path!r},",
-                "            json_body=payload,",
-                "        )",
-            ]
-        )
-    elif op.body_fields:
-        body_lines.extend(["        json_body = _clean_mapping(", "            {"])
-        for field in op.body_fields:
-            body_lines.append(f"                {field.name!r}: {field.name},")
-        body_lines.extend(
-            [
-                "            }",
-                "        )",
-                "        return self._transport.request(",
-                f"            {op.method!r},",
-                f"            {op.path!r},",
-                "            json_body=json_body,",
-                "        )",
-            ]
-        )
-    else:
-        body_lines.extend(
-            [
-                "        return self._transport.request(",
-                f"            {op.method!r},",
-                f"            {op.path!r},",
-                "        )",
-            ]
-        )
+        body_lines.extend(["            }", "        )"])
+        request_args.append("            params=params,")
+
+    if op.method != "GET":
+        if op.has_complex_body:
+            request_args.append("            json_body=payload,")
+        elif op.body_fields:
+            body_lines.extend(["        json_body = _clean_mapping(", "            {"])
+            for field in op.body_fields:
+                body_lines.append(f"                {field.name!r}: {field.name},")
+            body_lines.extend(["            }", "        )"])
+            request_args.append("            json_body=json_body,")
+
+    body_lines.extend(
+        [
+            "        return self._transport.request(",
+            f"            {op.method!r},",
+            f"            {op.path!r},",
+            *request_args,
+            "        )",
+        ]
+    )
 
     return "\n".join(
         [

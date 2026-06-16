@@ -24,7 +24,7 @@ with DXClient(web=DXWebConfig(token="<DX_WEB_API_TOKEN>")) as client:
 
     # Upsert — create or update in one call
     result = client.web.entities.upsert(
-        entity_type_identifier="service",
+        type="service",
         identifier="notifications-service",
         name="Notifications Service",
         properties={"tier": "2"},
